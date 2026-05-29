@@ -1,0 +1,14 @@
+{
+  "name": "ai-real-estate-faisalabad",
+  "version": "1.0.0",
+  "description": "Production-level AI Real Estate platform for Faisalabad",
+  "scripts": {
+    "frontend": "cd frontend && npm run dev",
+    "backend": "cd backend && npm run dev",
+    "ai": "cd ai-service && uvicorn main:app --reload --port 8000",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run ai\""
+  },
+  "keywords": ["real-estate", "faisalabad", "ai", "mern"],
+  "author": "Momina",
+  "license": "MIT"
+}
