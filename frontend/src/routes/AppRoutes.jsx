@@ -16,6 +16,7 @@ import Chat from '../pages/Chat'
 import Admin from '../pages/Admin'
 import AdminProperties from '../pages/AdminProperties'
 import AdminUsers from '../pages/AdminUsers'
+import Inbox from '../pages/Inbox'  // Add import
 
 const AppRoutes = () => {
   return (
@@ -37,6 +38,7 @@ const AppRoutes = () => {
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/properties" element={<AdminProperties />} />
         <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/inbox" element={<Inbox />} />
       </Routes>
       <Footer />
     </BrowserRouter>
