@@ -53,74 +53,142 @@ const AddProperty = () => {
     setPreviews(newPreviews)
   }
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault()
+  //   setLoading(true)
+  //   setError('')
+
+  //   try {
+  //     // Step 1 — AI Text Duplicate Check
+  //     const aiTextCheck = await API.post('/ai/check-duplicate', {
+  //       title: formData.title,
+  //       description: formData.description,
+  //       propertyId: 'temp_' + Date.now(),
+  //     })
+
+  //     if (aiTextCheck.data.result.is_duplicate) {
+  //       const score = aiTextCheck.data.result.duplicate_score
+  //       const confirm = window.confirm(
+  //         `⚠️ AI detected ${score}% text similarity with existing property!\n\nDo you still want to submit?`
+  //       )
+  //       if (!confirm) {
+  //         setLoading(false)
+  //         return
+  //       }
+  //     }
+
+  //     // Step 2 — AI Image Duplicate Check
+  //     if (images.length > 0) {
+  //       try {
+  //         const imgFormData = new FormData()
+  //         imgFormData.append('property_id', 'temp_img_' + Date.now())
+  //         images.forEach(image => imgFormData.append('images', image))
+
+  //         const aiImageCheck = await API.post('/ai/check-image-duplicate', imgFormData, {
+  //           headers: { 'Content-Type': 'multipart/form-data' }
+  //         })
+
+  //         if (aiImageCheck.data.result.is_duplicate) {
+  //           const confirm = window.confirm(
+  //             `⚠️ AI detected 100% image similarity with existing property!\n\nDo you still want to submit?`
+  //           )
+  //           if (!confirm) {
+  //             setLoading(false)
+  //             return
+  //           }
+  //         }
+  //       } catch (imgError) {
+  //         console.log('Image check error:', imgError)
+  //         setError('Image check failed: ' + imgError.message)
+  //       }
+  //     }
+
+  //     // Step 3 — Submit Property
+  //     const data = new FormData()
+  //     Object.keys(formData).forEach(key => data.append(key, formData[key]))
+  //     images.forEach(image => data.append('images', image))
+
+  //     await API.post('/properties', data, {
+  //       headers: { 'Content-Type': 'multipart/form-data' }
+  //     })
+
+  //     setSuccess('Property listed successfully!')
+  //     setTimeout(() => navigate('/my-properties'), 1500)
+
+  //   } catch (err) {
+  //     setError(err.response?.data?.message || 'Something went wrong!')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+  e.preventDefault()
+  setLoading(true)
+  setError('')
 
-    try {
-      // Step 1 — AI Text Duplicate Check
-      const aiTextCheck = await API.post('/ai/check-duplicate', {
-        title: formData.title,
-        description: formData.description,
-        propertyId: 'temp_' + Date.now(),
-      })
+  // ✅ Ek hi ID dono checks ke liye
+  const tempId = 'temp_' + Date.now()
 
-      if (aiTextCheck.data.result.is_duplicate) {
-        const score = aiTextCheck.data.result.duplicate_score
-        const confirm = window.confirm(
-          `⚠️ AI detected ${score}% text similarity with existing property!\n\nDo you still want to submit?`
-        )
-        if (!confirm) {
-          setLoading(false)
-          return
-        }
-      }
+  try {
+    // Step 1 — Text Check
+    const aiTextCheck = await API.post('/ai/check-duplicate', {
+      title: formData.title,
+      description: formData.description,
+      propertyId: tempId,  // ✅ same ID
+    })
 
-      // Step 2 — AI Image Duplicate Check
-      if (images.length > 0) {
-        try {
-          const imgFormData = new FormData()
-          imgFormData.append('property_id', 'temp_img_' + Date.now())
-          images.forEach(image => imgFormData.append('images', image))
-
-          const aiImageCheck = await API.post('/ai/check-image-duplicate', imgFormData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          })
-
-          if (aiImageCheck.data.result.is_duplicate) {
-            const confirm = window.confirm(
-              `⚠️ AI detected 100% image similarity with existing property!\n\nDo you still want to submit?`
-            )
-            if (!confirm) {
-              setLoading(false)
-              return
-            }
-          }
-        } catch (imgError) {
-          console.log('Image check error:', imgError)
-          setError('Image check failed: ' + imgError.message)
-        }
-      }
-
-      // Step 3 — Submit Property
-      const data = new FormData()
-      Object.keys(formData).forEach(key => data.append(key, formData[key]))
-      images.forEach(image => data.append('images', image))
-
-      await API.post('/properties', data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-
-      setSuccess('Property listed successfully!')
-      setTimeout(() => navigate('/my-properties'), 1500)
-
-    } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong!')
-    } finally {
-      setLoading(false)
+    if (aiTextCheck.data.result.is_duplicate) {
+      const score = aiTextCheck.data.result.duplicate_score
+      const confirm = window.confirm(
+        `⚠️ AI detected ${score}% text similarity with existing property!\n\nDo you still want to submit?`
+      )
+      if (!confirm) { setLoading(false); return }
     }
+
+    // Step 2 — Image Check
+    if (images.length > 0) {
+      try {
+        const imgFormData = new FormData()
+        imgFormData.append('property_id', tempId)  // ✅ same ID
+        images.forEach(image => imgFormData.append('images', image))
+
+        const aiImageCheck = await API.post('/ai/check-image-duplicate', imgFormData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+
+        console.log('Image check result:', aiImageCheck.data)  // debug ke liye
+
+        if (aiImageCheck.data.result.is_duplicate) {
+          const score = aiImageCheck.data.result.duplicate_score
+          const confirm = window.confirm(
+            `⚠️ AI detected ${score}% image similarity with existing property!\n\nDo you still want to submit?`
+          )
+          if (!confirm) { setLoading(false); return }
+        }
+      } catch (imgError) {
+        console.log('Image check error:', imgError)
+      }
+    }
+
+    // Step 3 — Property Submit
+    const data = new FormData()
+    Object.keys(formData).forEach(key => data.append(key, formData[key]))
+    images.forEach(image => data.append('images', image))
+
+    await API.post('/properties', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+
+    setSuccess('Property listed successfully!')
+    setTimeout(() => navigate('/my-properties'), 1500)
+
+  } catch (err) {
+    setError(err.response?.data?.message || 'Something went wrong!')
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <div className="min-h-screen bg-[#f8f9fc]">

@@ -163,6 +163,45 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id)
   })
 })
+// // MongoDB Connect + Server Start
+// const PORT = process.env.PORT || 5000
+
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(async () => {
+//     console.log('✅ MongoDB Connected!')
+
+//     // Load all properties into AI service
+//     try {
+//       const Property = require('./models/Property')
+//       const axios = require('axios')
+//       const FormData = require('form-data')
+
+//       const properties = await Property.find({ status: 'active' })
+//       console.log(`📦 Loading ${properties.length} properties into AI...`)
+
+//       for (const prop of properties) {
+//         const aiForm = new FormData()
+//         aiForm.append('title', prop.title)
+//         aiForm.append('description', prop.description)
+//         aiForm.append('property_id', prop._id.toString())
+
+//         await axios.post('http://localhost:8000/detect-duplicate-combined', aiForm, {
+//           headers: aiForm.getHeaders()
+//         }).catch(() => { })
+//       }
+//       console.log('✅ AI Service loaded with existing properties!')
+//     } catch (err) {
+//       console.log('AI preload skipped:', err.message)
+//     }
+
+//     server.listen(PORT, () => {
+//       console.log(`🚀 Server running on http://localhost:${PORT}`)
+//     })
+//   })
+//   .catch((err) => {
+//     console.log('❌ MongoDB Error:', err.message)
+//   })
+
 // MongoDB Connect + Server Start
 const PORT = process.env.PORT || 5000
 
@@ -170,26 +209,10 @@ mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('✅ MongoDB Connected!')
 
-    // Load all properties into AI service
+    // ✅ Load all properties into AI service (text + images)
     try {
-      const Property = require('./models/Property')
-      const axios = require('axios')
-      const FormData = require('form-data')
-
-      const properties = await Property.find({ status: 'active' })
-      console.log(`📦 Loading ${properties.length} properties into AI...`)
-
-      for (const prop of properties) {
-        const aiForm = new FormData()
-        aiForm.append('title', prop.title)
-        aiForm.append('description', prop.description)
-        aiForm.append('property_id', prop._id.toString())
-
-        await axios.post('http://localhost:8000/detect-duplicate-combined', aiForm, {
-          headers: aiForm.getHeaders()
-        }).catch(() => { })
-      }
-      console.log('✅ AI Service loaded with existing properties!')
+      const { loadPropertiesToAI } = require('./controllers/propertyController')
+      await loadPropertiesToAI()
     } catch (err) {
       console.log('AI preload skipped:', err.message)
     }

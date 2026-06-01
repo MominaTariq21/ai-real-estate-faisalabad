@@ -35,7 +35,8 @@ const checkDuplicate = async (req, res) => {
 // @desc    Check Image Duplicate
 const checkImageDuplicate = async (req, res) => {
   try {
-    const propertyId = req.body?.propertyId || 'temp_' + Date.now()
+    // const propertyId = req.body?.propertyId || 'temp_' + Date.now()
+    const propertyId = req.body?.property_id || 'temp_' + Date.now()
  
     // Debug: dekho kya aa raha hai
     console.log('📸 Image check request received')
